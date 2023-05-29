@@ -1,8 +1,6 @@
-<div style="background-color:white; padding: 1rem;">
 <a href="https://github.com/juliuszlioba/energypal-astro">
-  <img src="./public/assets/EnergyPal_Logo_300x100.png" alt="Logo" width="300" height="100">
+  <img src="./public/assets/EnergyPal_Logo_300x100_whiteBg.png" alt="Logo" width="330" height="130">
 </a>
-</div>
 
 # EnergyPal.at
 
