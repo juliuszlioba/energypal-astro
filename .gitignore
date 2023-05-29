@@ -21,4 +21,5 @@ pnpm-debug.log*
 .DS_Store
 
 # external assets
-public/assets
+public/assets/images
+public/assets/videos
