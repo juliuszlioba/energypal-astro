@@ -1,0 +1,44 @@
+---
+import ContactForm from "../components/ContactForm";
+import Enquiry from "../components/Enquiry";
+import Reviews from "../components/Reviews";
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Homepage">
+  <main>
+    <section id="kontakt" class="relative">
+      <div class="absolute z-0 flex h-full w-full justify-end object-cover">
+        <div class="h-full w-full overflow-hidden bg-white">
+          <video
+            autoplay
+            muted
+            loop
+            preload="none"
+            class="h-full w-full object-cover object-center opacity-20"
+          >
+            <!--<source src="https://cdn2.site-media.eu/images/0/5627977/pexels-kampus-production-8426049.mp4" />-->
+            <source src="/assets/Hand-SHake_1.mp4" />
+          </video>
+        </div>
+      </div>
+      <div
+        class="relative z-0 flex w-full flex-col justify-center px-8 py-16 md:px-16 xl:px-24 xl:py-32 2xl:px-44"
+      >
+        <div>
+          <h1
+            class="text-center text-2xl font-semibold leading-tight text-primary md:text-left md:text-3xl xl:text-4xl"
+          >
+            Kontakt
+          </h1>
+          <p
+            class="mt-4 text-center text-lg font-semibold text-secondary md:text-left lg:text-2xl"
+          >
+            Wir freuen uns darauf von Ihnen zu hören
+          </p>
+        </div>
+				<ContactForm client:visible/>
+      </div>
+    </section>
+  </main>
+</Layout>

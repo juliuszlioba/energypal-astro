@@ -1,0 +1,42 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Datenschutz">
+  <section class="template-legal">
+    <div
+      class="relative z-0 w-full items-center px-4 py-32 md:min-h-screen md:flex-row md:px-12 xl:px-24 2xl:px-44"
+    >
+      <div>
+        <h1
+          class="text-center text-2xl font-semibold leading-tight text-primary md:text-left md:text-3xl xl:text-4xl"
+        >
+          Title
+        </h1>
+      </div>
+      <div class="my-12">
+        <div class="grid grid-cols-1 gap-4">
+          Content
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+
+  /* Legal Page template rules */
+  section.template-legal h2  {
+    @apply mt-4 text-center text-2xl font-semibold text-secondary md:text-left lg:text-3xl;
+  }
+  section.template-legal h3  {
+    @apply mt-4 text-center text-lg font-semibold text-secondary md:text-left lg:text-2xl;
+  }
+  section.template-legal p  {
+    @apply md:text-lg text-center sm:text-left;
+  }
+  section.template-legal p a {
+    @apply text-primary hover:text-secondary hover:underline hover:underline-offset-4 lg:text-lg;
+  }
+
+</style>

@@ -1,0 +1,24 @@
+{
+  "workbench.colorCustomizations": {
+    "titleBar.activeForeground": "#f1f8fd",
+    "titleBar.inactiveForeground": "#b3b3b3",
+    "titleBar.activeBackground": "#273064",
+    "titleBar.inactiveBackground": "#141a3b",
+    "titleBar.border": "#fbc225",
+  },
+  "editor.guides.bracketPairs": "active",
+  "[typescript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"editor.formatOnSave": true
+	},
+	"[typescriptreact]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"editor.formatOnSave": true
+	},
+	"[json]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"editor.formatOnSave": true
+	},
+  //"typescript.suggest.paths": false,
+	//"javascript.suggest.paths": false
+}
