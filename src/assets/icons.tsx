@@ -1,6 +1,6 @@
 import { h } from "preact"
 
-const WindTurbineLoading = () => {
+export function WindTurbineLoading () {
   return (
     <div className="flex flex-row items-center rounded-xl bg-sky-lightest bg-opacity-40 py-1 pr-7 pl-3">
       <div className="relative h-[60px] w-[60px] -translate-y-2 overflow-hidden">
@@ -44,7 +44,7 @@ const WindTurbineLoading = () => {
   )
 }
 
-const WindTurbine = () => {
+export function WindTurbine () {
   return (
     <div className="relative h-[62px] w-[62px] -translate-y-2 overflow-hidden">
       <svg
@@ -84,5 +84,3 @@ const WindTurbine = () => {
     </div>
   )
 }
-
-export { WindTurbineLoading, WindTurbine }

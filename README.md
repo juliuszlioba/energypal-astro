@@ -10,7 +10,7 @@ Website project
 
 ## ! Requirements
 
-`./putblic/assets/images` and `./putblic/assets/videos` saved separately in Google Drive _(Backup > Websites > energypal.at)_
+`./public/assets/images` and `./public/assets/videos` saved separately in Google Drive _(Backup > Websites > energypal.at)_
 
 ## To-Do
 

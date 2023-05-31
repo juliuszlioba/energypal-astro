@@ -1,154 +1,173 @@
-import { h, Fragment } from "preact"
-import { useState, useEffect, useRef } from "preact/compat"
-import { useForm } from "react-hook-form"
-import { Transition } from "@headlessui/react"
-import { BsCheck2Circle, BsCheckLg, BsPlus, BsDash } from "react-icons/bs"
-import { MdBolt } from "react-icons/md"
-import { FaFireAlt } from "react-icons/fa"
-import { Tab } from "@headlessui/react"
+import { h, Fragment } from "preact";
+import { useState, useEffect, useRef } from "preact/compat";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { Transition } from "@headlessui/react";
+import { Tab } from "@headlessui/react";
 
-import { WindTurbine } from "../assets/icons"
+import { WindTurbine } from "../assets/icons";
+
+type Inputs = {
+  access_key: string;
+  botcheck: boolean;
+  name: string;
+  phone: string;
+  email: string;
+  message: string;
+  consent: boolean;
+  kwh_gas: number;
+  kwh_electricity: number;
+  plz: number;
+};
 
 export default function Enquiry({ version = "" }) {
   const {
     register,
     setValue,
     trigger,
-    clearErrors,
     getValues,
     handleSubmit,
     formState: { errors },
-  } = useForm()
-  const [openForm, setOpenForm] = useState(false)
+  } = useForm<Inputs>();
+  const [openForm, setOpenForm] = useState(false);
 
-  const [loading, setLoading] = useState(false)
-  const [success, setSuccess] = useState(false)
-  const [submitError, setSubmitError] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState(false);
 
-  const [hausholdPersons, setHausholdPersons] = useState(0)
-  const [hausholdSize, setHausholdSize] = useState(0)
+  const [hausholdPersons, setHausholdPersons] = useState(0);
+  const [hausholdSize, setHausholdSize] = useState(0);
 
-  const [defaultTab, setDefaultTab] = useState(0)
+  const [defaultTab, setDefaultTab] = useState(0);
 
-  const formRef = useRef(null)
+  const formRef = useRef(null);
 
   useEffect(() => {
     register("kwh_gas", {
       required: true,
       pattern: /^[0-9]+$/i,
       value: 0,
-    })
+    });
     register("kwh_electricity", {
       required: true,
       pattern: /^[0-9]+$/i,
       value: 0,
-    })
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, []);
 
-  const sendData = async (dataLoad) => {
-    // console.log({
-    //   url: `${__WORDPRESS_API_BASE_URL__}/wp-json/api/v1/enquiry/`,
-    //   data: dataLoad,
-    // })
+  const sendData = async (dataLoad: any) => {
+    setLoading(true);
 
-    setLoading(true)
-
-    //! TO-DO
-    fetch(`${__WORDPRESS_API_BASE_URL__}/wp-json/api/v1/enquiry/`, {
+    fetch(import.meta.env.PUBLIC_MAILER_API_URL, {
       method: "POST",
-      cache: "no-cache",
       headers: {
         "Content-Type": "application/json",
+        Accept: "application/json",
       },
-      body: JSON.stringify(dataLoad),
+      body: JSON.stringify(dataLoad, null, 2),
     })
       .then((response) => response.json())
       .then((result) => {
-        setLoading(false)
+        setLoading(false);
         if (result.status === "ok") {
-          setSuccess(true)
+          setSuccess(true);
         }
-        return setSubmitError(true)
+        return setSubmitError(true);
       })
       .catch((error) => {
-        setLoading(false)
-        setSubmitError(true)
-        console.log(error)
-      })
-  }
+        setLoading(false);
+        setSubmitError(true);
+        console.log(error);
+      });
+  };
 
-  const onSubmit = () => {
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
     //Prepare data
     const dataLoad = {
-      plz: getValues("plz"),
-      telefonnummer: getValues("phone"),
-      email: getValues("email"),
+      plz: data.plz,
+      telefonnummer: data.phone,
+      email: data.email,
       strom_haushaltgroesse: hausholdPersons,
-      strom_jahresverbrauch: getValues("kwh_electricity"),
+      strom_jahresverbrauch: data.kwh_electricity,
       gas_haushaltgroesse: hausholdSize,
-      gas_jahresverbrauch: getValues("kwh_gas"),
-    }
+      gas_jahresverbrauch: data.kwh_gas,
+      access_key: data.access_key,
+      botcheck: data.botcheck,
+    };
 
-    return sendData(dataLoad)
-  }
+    return sendData(dataLoad);
+  };
 
-  const handleInputChange = (value) => {
+  const handleInputChange = (value: string) => {
     if (value.length > 0 && !openForm) {
-      setOpenForm(true)
+      setOpenForm(true);
     }
-  }
+  };
 
-  const handleHausholdPersonsChange = ({ action }) => {
-    const currentHausholdPersons = hausholdPersons
+  const handleHausholdPersonsChange = ({
+    action,
+  }: {
+    action: "add" | "subtract";
+  }) => {
+    const currentHausholdPersons = hausholdPersons;
 
     if (action === "add") {
-      setHausholdPersons(hausholdPersons + 1)
-      setValue("kwh_electricity", (currentHausholdPersons + 1) * 1300)
+      setHausholdPersons(hausholdPersons + 1);
+      setValue("kwh_electricity", (currentHausholdPersons + 1) * 1300);
     }
     if (action === "subtract" && hausholdPersons > 0) {
-      setHausholdPersons(hausholdPersons - 1)
-      setValue("kwh_electricity", (currentHausholdPersons - 1) * 1300)
+      setHausholdPersons(hausholdPersons - 1);
+      setValue("kwh_electricity", (currentHausholdPersons - 1) * 1300);
     }
-    return
-  }
+    return;
+  };
 
-  const handleHausholdSizeChange = ({ action }) => {
-    const currentHausholdSize = hausholdSize
+  const handleHausholdSizeChange = ({
+    action,
+  }: {
+    action: "add" | "subtract";
+  }) => {
+    const currentHausholdSize = hausholdSize;
 
     if (action === "add") {
-      setHausholdSize(hausholdSize + 30)
-      setValue("kwh_gas", (currentHausholdSize + 30) * 140)
+      setHausholdSize(hausholdSize + 30);
+      setValue("kwh_gas", (currentHausholdSize + 30) * 140);
     }
     if (action === "subtract" && hausholdSize > 29) {
-      setHausholdSize(hausholdSize - 30)
-      setValue("kwh_gas", (currentHausholdSize - 30) * 140)
+      setHausholdSize(hausholdSize - 30);
+      setValue("kwh_gas", (currentHausholdSize - 30) * 140);
     }
-    return
-  }
+    return;
+  };
 
-  const handleHausholdSizeManualChange = ({ value }) => {
-    console.log(parseInt(value))
+  const handleHausholdSizeManualChange = ({ value }: { value: any }) => {
+    console.log(parseInt(value));
 
     if (!value) {
-      setValue("kwh_gas", 0)
-      trigger("kwh_gas")
-      return
+      setValue("kwh_gas", 0);
+      trigger("kwh_gas");
+      return;
     }
 
-    setHausholdSize(parseInt(value))
-    setValue("kwh_gas", parseInt(value) * 140)
-    trigger("kwh_gas")
-    return
-  }
+    setHausholdSize(parseInt(value));
+    setValue("kwh_gas", parseInt(value) * 140);
+    trigger("kwh_gas");
+    return;
+  };
 
-  const handleConsumptionManualChange = ({ value, type }) => {
-    type === "gas" && setValue("kwh_gas", parseInt(value))
-    type === "gas" && trigger("kwh_gas")
-    type === "electricity" && setValue("kwh_electricity", parseInt(value))
-    type === "electricity" && trigger("kwh_electricity")
-    return
-  }
+  const handleConsumptionManualChange = ({
+    value,
+    type,
+  }: {
+    value: any;
+    type: any;
+  }) => {
+    type === "gas" && setValue("kwh_gas", parseInt(value));
+    type === "gas" && trigger("kwh_gas");
+    type === "electricity" && setValue("kwh_electricity", parseInt(value));
+    type === "electricity" && trigger("kwh_electricity");
+    return;
+  };
 
   if (version === "form-long") {
     return (
@@ -156,7 +175,8 @@ export default function Enquiry({ version = "" }) {
         {success ? (
           <div className="grid w-full grid-cols-1 items-center gap-4 py-12">
             <div className="flex items-center gap-4 rounded-lg bg-secondary p-8 text-white">
-              <BsCheck2Circle className="h-8 w-8 shrink-0" />
+              {/* prettier-ignore */}
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-8 w-8 shrink-0" > <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /> </svg>
               <span>
                 <p class="pb-2 lg:text-xl">
                   Ihre nachricht wurde erfolgreich gesendet. Wir melden uns in
@@ -171,34 +191,54 @@ export default function Enquiry({ version = "" }) {
           </div>
         ) : (
           <form onSubmit={handleSubmit(onSubmit)}>
+            <input
+              type="hidden"
+              {...register("access_key", {
+                value: import.meta.env.PUBLIC_MAILER_API_KEY,
+              })}
+            />
+            <input
+              type="checkbox"
+              id=""
+              className="hidden"
+              style={{ display: "none" }}
+              {...register("botcheck")}
+            ></input>
             <div class="grid grid-cols-6 items-center gap-8 py-12">
               <div className="col-span-full rounded-xl bg-sky-lightest bg-opacity-50 md:col-span-3 xl:col-span-2">
                 <Tab.Group>
                   <Tab.List className="flex">
                     <Tab as={Fragment}>
-                      {({ selected }) => (
+                      {({ selected }: { selected: any }) => (
                         <button
-                          className={`inline-flex w-full items-center gap-3 rounded-t-xl px-6 pt-5 pb-4 ${
+                          className={`inline-flex w-full items-center gap-3 rounded-t-xl px-6 pb-4 pt-5 ${
                             selected
                               ? "bg-sky-lightest text-primary hover:bg-complimentary hover:text-primary"
                               : "bg-transparent text-primary hover:bg-complimentary hover:text-primary"
                           }`}
                         >
-                          <MdBolt className="h-8 w-8" />
+                          {/* prettier-ignore */}
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                          </svg>
                           <span className="text-xl font-semibold">Strom</span>
                         </button>
                       )}
                     </Tab>
                     <Tab as={Fragment}>
-                      {({ selected }) => (
+                      {({ selected }: { selected: any }) => (
                         <button
-                          className={`inline-flex w-full items-center gap-3 rounded-t-xl px-6 pt-5 pb-4 ${
+                          className={`inline-flex w-full items-center gap-3 rounded-t-xl px-6 pb-4 pt-5 ${
                             selected
                               ? "bg-sky-lightest text-primary hover:bg-complimentary hover:text-primary"
                               : "bg-transparent text-primary hover:bg-complimentary hover:text-primary"
                           }`}
                         >
-                          <FaFireAlt className="h-6 w-6" />
+                          {/* prettier-ignore */}
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1A3.75 3.75 0 0012 18z" />
+                          </svg>
                           <span className="text-xl font-semibold">Gas</span>
                         </button>
                       )}
@@ -217,14 +257,18 @@ export default function Enquiry({ version = "" }) {
                         <div class="flex items-center justify-between rounded-xl border border-transparent bg-white drop-shadow-flat-light">
                           <button
                             className="rounded-l-xl p-3 hover:bg-complimentary lg:px-4"
+                            // @ts-ignore
                             onCLick={(e) => {
-                              e.preventDefault()
+                              e.preventDefault();
                               handleHausholdPersonsChange({
                                 action: "subtract",
-                              })
+                              });
                             }}
                           >
-                            <BsDash className="h-6 w-6" />
+                            {/* prettier-ignore */}
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12h-15" />
+                            </svg>
                           </button>
                           <p className="font-semibold lg:p-3 xl:text-xl">
                             {hausholdPersons}{" "}
@@ -232,12 +276,16 @@ export default function Enquiry({ version = "" }) {
                           </p>
                           <button
                             className="rounded-r-xl p-3 hover:bg-complimentary lg:px-4"
+                            // @ts-ignore
                             onCLick={(e) => {
-                              e.preventDefault()
-                              handleHausholdPersonsChange({ action: "add" })
+                              e.preventDefault();
+                              handleHausholdPersonsChange({ action: "add" });
                             }}
                           >
-                            <BsPlus className="h-6 w-6" />
+                            {/* prettier-ignore */}
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            </svg>
                           </button>
                         </div>
                         <p class="whitespace-nowrap text-left font-semibold text-primary xl:text-xl">
@@ -257,8 +305,9 @@ export default function Enquiry({ version = "" }) {
                             onChange={(e) => {
                               handleConsumptionManualChange({
                                 type: "electricity",
+                                // @ts-ignore
                                 value: e.target.value,
-                              })
+                              });
                             }}
                           />
                           {errors.kwh_electricity && (
@@ -280,12 +329,16 @@ export default function Enquiry({ version = "" }) {
                         <div class="flex items-center justify-between rounded-xl bg-white drop-shadow-flat-light">
                           <button
                             className="rounded-l-xl p-3 hover:bg-complimentary lg:px-4"
-                            onCLick={(e) => {
-                              e.preventDefault()
-                              handleHausholdSizeChange({ action: "subtract" })
+                            // @ts-ignore
+                            onCLick={(e: any) => {
+                              e.preventDefault();
+                              handleHausholdSizeChange({ action: "subtract" });
                             }}
                           >
-                            <BsDash className="h-6 w-6" />
+                            {/* prettier-ignore */}
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12h-15" />
+                            </svg>
                           </button>
                           <div className="inline-flex items-center">
                             <input
@@ -294,10 +347,12 @@ export default function Enquiry({ version = "" }) {
                               inputMode="numeric"
                               className="w-1/2 border-transparent px-0 text-right font-semibold lg:py-3 xl:text-xl"
                               onChange={(e) => {
+                                // @ts-ignore
                                 if (e.target.value > 0) {
                                   handleHausholdSizeManualChange({
+                                    // @ts-ignore
                                     value: e.target.value,
-                                  })
+                                  });
                                 }
                               }}
                             />
@@ -307,12 +362,16 @@ export default function Enquiry({ version = "" }) {
                           </div>
                           <button
                             className="rounded-r-xl p-3 hover:bg-complimentary lg:px-4"
+                            // @ts-ignore
                             onCLick={(e) => {
-                              e.preventDefault()
-                              handleHausholdSizeChange({ action: "add" })
+                              e.preventDefault();
+                              handleHausholdSizeChange({ action: "add" });
                             }}
                           >
-                            <BsPlus className="h-6 w-6" />
+                            {/* prettier-ignore */}
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            </svg>
                           </button>
                         </div>
                         <p class="whitespace-nowrap text-left font-semibold text-primary xl:text-xl">
@@ -328,8 +387,9 @@ export default function Enquiry({ version = "" }) {
                             onChange={(e) => {
                               handleConsumptionManualChange({
                                 type: "gas",
+                                // @ts-ignore
                                 value: e.target.value,
-                              })
+                              });
                             }}
                           />
                           {errors.kwh_gas && (
@@ -461,7 +521,7 @@ export default function Enquiry({ version = "" }) {
           </form>
         )}
       </>
-    )
+    );
   }
 
   return (
@@ -471,7 +531,8 @@ export default function Enquiry({ version = "" }) {
           className={`flex flex-col gap-3 rounded-lg border border-primary bg-secondary px-6 py-5`}
         >
           <div className="flex items-center justify-center gap-3 text-white md:justify-start">
-            <BsCheck2Circle className="h-8 w-8 shrink-0" />
+            {/* prettier-ignore */}
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-8 w-8 shrink-0" > <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /> </svg>
             <span>
               <p class="pb-2 lg:text-xl">
                 Ihre nachricht wurde erfolgreich gesendet. Wir melden uns in
@@ -486,6 +547,20 @@ export default function Enquiry({ version = "" }) {
         </div>
       ) : (
         <form onSubmit={handleSubmit(onSubmit)} ref={formRef}>
+          <input
+            type="hidden"
+            {...register("access_key", {
+              value: import.meta.env.PUBLIC_MAILER_API_KEY,
+            })}
+          />
+          <input
+            type="checkbox"
+            id=""
+            className="hidden"
+            style={{ display: "none" }}
+            {...register("botcheck")}
+          ></input>
+
           <div class="flex flex-col gap-4 md:flex-row md:items-center md:gap-8">
             {!openForm ? (
               <div
@@ -496,23 +571,30 @@ export default function Enquiry({ version = "" }) {
                 <button
                   className={`inline-flex w-full items-center gap-3 rounded-xl bg-transparent px-6 py-5 text-primary hover:bg-complimentary hover:text-primary xl:py-8`}
                   onClick={(e) => {
-                    e.preventDefault()
-                    setDefaultTab(0)
-                    setOpenForm(true)
+                    e.preventDefault();
+                    setDefaultTab(0);
+                    setOpenForm(true);
                   }}
                 >
-                  <MdBolt className="h-8 w-8" />
+                  {/* prettier-ignore */}
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                  </svg>
                   <span className="text-xl font-semibold">Strom</span>
                 </button>
                 <button
                   className={`inline-flex w-full items-center gap-3 rounded-xl bg-transparent px-6 py-5 text-primary hover:bg-complimentary hover:text-primary xl:py-8`}
                   onClick={(e) => {
-                    e.preventDefault()
-                    setDefaultTab(1)
-                    setOpenForm(true)
+                    e.preventDefault();
+                    setDefaultTab(1);
+                    setOpenForm(true);
                   }}
                 >
-                  <FaFireAlt className="h-6 w-6" />
+                  {/* prettier-ignore */}
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1A3.75 3.75 0 0012 18z" />
+                  </svg>
                   <span className="text-xl font-semibold">Gas</span>
                 </button>
               </div>
@@ -525,29 +607,36 @@ export default function Enquiry({ version = "" }) {
                 <Tab.Group defaultIndex={defaultTab}>
                   <Tab.List className="flex">
                     <Tab as={Fragment}>
-                      {({ selected }) => (
+                      {({ selected }: { selected: any }) => (
                         <button
-                          className={`inline-flex w-full items-center gap-3 rounded-t-xl px-6 pt-5 pb-4 ${
+                          className={`inline-flex w-full items-center gap-3 rounded-t-xl px-6 pb-4 pt-5 ${
                             selected
                               ? "bg-sky-lightest text-primary hover:bg-complimentary hover:text-primary"
                               : "bg-transparent text-primary hover:bg-complimentary hover:text-primary"
                           }`}
                         >
-                          <MdBolt className="h-8 w-8" />
+                          {/* prettier-ignore */}
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                          </svg>
                           <span className="text-xl font-semibold">Strom</span>
                         </button>
                       )}
                     </Tab>
                     <Tab as={Fragment}>
-                      {({ selected }) => (
+                      {({ selected }: { selected: any }) => (
                         <button
-                          className={`inline-flex w-full items-center gap-3 rounded-t-xl px-6 pt-5 pb-4 ${
+                          className={`inline-flex w-full items-center gap-3 rounded-t-xl px-6 pb-4 pt-5 ${
                             selected
                               ? "bg-sky-lightest text-primary hover:bg-complimentary hover:text-primary"
                               : "bg-transparent text-primary hover:bg-complimentary hover:text-primary"
                           }`}
                         >
-                          <FaFireAlt className="h-6 w-6" />
+                          {/* prettier-ignore */}
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1A3.75 3.75 0 0012 18z" />
+                          </svg>
                           <span className="text-xl font-semibold">Gas</span>
                         </button>
                       )}
@@ -566,14 +655,18 @@ export default function Enquiry({ version = "" }) {
                         <div class="flex items-center justify-between rounded-xl border border-transparent bg-white drop-shadow-flat-light">
                           <button
                             className="rounded-l-xl p-3 hover:bg-complimentary lg:px-4"
+                            // @ts-ignore
                             onCLick={(e) => {
-                              e.preventDefault()
+                              e.preventDefault();
                               handleHausholdPersonsChange({
                                 action: "subtract",
-                              })
+                              });
                             }}
                           >
-                            <BsDash className="h-6 w-6" />
+                            {/* prettier-ignore */}
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12h-15" />
+                            </svg>
                           </button>
                           <p className="font-semibold lg:p-3 xl:text-xl">
                             {hausholdPersons}{" "}
@@ -581,12 +674,16 @@ export default function Enquiry({ version = "" }) {
                           </p>
                           <button
                             className="rounded-r-xl p-3 hover:bg-complimentary lg:px-4"
+                            // @ts-ignore
                             onCLick={(e) => {
-                              e.preventDefault()
-                              handleHausholdPersonsChange({ action: "add" })
+                              e.preventDefault();
+                              handleHausholdPersonsChange({ action: "add" });
                             }}
                           >
-                            <BsPlus className="h-6 w-6" />
+                            {/* prettier-ignore */}
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            </svg>
                           </button>
                         </div>
                         <p class="whitespace-nowrap text-left font-semibold text-primary xl:text-xl">
@@ -602,8 +699,9 @@ export default function Enquiry({ version = "" }) {
                             onChange={(e) => {
                               handleConsumptionManualChange({
                                 type: "electricity",
+                                // @ts-ignore
                                 value: e.target.value,
-                              })
+                              });
                             }}
                           />
                           {errors.kwh_electricity && (
@@ -625,12 +723,16 @@ export default function Enquiry({ version = "" }) {
                         <div class="flex items-center justify-between rounded-xl bg-white drop-shadow-flat-light">
                           <button
                             className="rounded-l-xl p-3 hover:bg-complimentary lg:px-4"
+                            // @ts-ignore
                             onCLick={(e) => {
-                              e.preventDefault()
-                              handleHausholdSizeChange({ action: "subtract" })
+                              e.preventDefault();
+                              handleHausholdSizeChange({ action: "subtract" });
                             }}
                           >
-                            <BsDash className="h-6 w-6" />
+                            {/* prettier-ignore */}
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12h-15" />
+                            </svg>
                           </button>
                           <div className="inline-flex items-center">
                             <input
@@ -639,10 +741,12 @@ export default function Enquiry({ version = "" }) {
                               inputMode="numeric"
                               className="w-1/2 border-transparent px-0 text-right font-semibold lg:py-3 xl:text-xl"
                               onChange={(e) => {
+                                // @ts-ignore
                                 if (e.target.value > 0) {
                                   handleHausholdSizeManualChange({
+                                    // @ts-ignore
                                     value: e.target.value,
-                                  })
+                                  });
                                 }
                               }}
                             />
@@ -652,12 +756,16 @@ export default function Enquiry({ version = "" }) {
                           </div>
                           <button
                             className="rounded-r-xl p-3 hover:bg-complimentary lg:px-4"
+                            // @ts-ignore
                             onCLick={(e) => {
-                              e.preventDefault()
-                              handleHausholdSizeChange({ action: "add" })
+                              e.preventDefault();
+                              handleHausholdSizeChange({ action: "add" });
                             }}
                           >
-                            <BsPlus className="h-6 w-6" />
+                            {/* prettier-ignore */}
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            </svg>
                           </button>
                         </div>
                         <p class="whitespace-nowrap text-left font-semibold text-primary xl:text-xl">
@@ -677,8 +785,9 @@ export default function Enquiry({ version = "" }) {
                             onChange={(e) => {
                               handleConsumptionManualChange({
                                 type: "gas",
+                                // @ts-ignore
                                 value: e.target.value,
-                              })
+                              });
                             }}
                           />
                           {errors.kwh_gas && (
@@ -718,9 +827,11 @@ export default function Enquiry({ version = "" }) {
                           : "border-sky focus:border-primary focus:ring-primary"
                       }`}
                       onChange={(e) => {
-                        setValue("plz", e.target.value)
-                        trigger("plz")
-                        handleInputChange(e.target.value)
+                        // @ts-ignore
+                        setValue("plz", e.target.value);
+                        trigger("plz");
+                        // @ts-ignore
+                        handleInputChange(e.target.value);
                       }}
                     />
                   </div>
@@ -749,9 +860,11 @@ export default function Enquiry({ version = "" }) {
                           : "border-sky focus:border-primary focus:ring-primary"
                       }`}
                       onChange={(e) => {
-                        setValue("phone", e.target.value)
-                        trigger("phone")
-                        handleInputChange(e.target.value)
+                        // @ts-ignore
+                        setValue("phone", e.target.value);
+                        trigger("phone");
+                        // @ts-ignore
+                        handleInputChange(e.target.value);
                       }}
                     />
                   </div>
@@ -779,9 +892,11 @@ export default function Enquiry({ version = "" }) {
                           : "border-sky focus:border-primary focus:ring-primary"
                       }`}
                       onChange={(e) => {
-                        setValue("email", e.target.value)
-                        trigger("email")
-                        handleInputChange(e.target.value)
+                        // @ts-ignore
+                        setValue("email", e.target.value);
+                        trigger("email");
+                        // @ts-ignore
+                        handleInputChange(e.target.value);
                       }}
                     />
                   </div>
@@ -857,8 +972,11 @@ export default function Enquiry({ version = "" }) {
 
                   <div className="col-span-full pt-2 text-center font-semibold">
                     <div className="inline-flex items-center gap-3 text-secondary">
-                      <BsCheckLg className="text-secondary" /> 100% kostenlos
-                      und unverbindlich
+                      {/* prettier-ignore */}
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-secondary">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                      </svg>
+                      100% kostenlos und unverbindlich
                     </div>
                   </div>
                 </div>
@@ -868,5 +986,5 @@ export default function Enquiry({ version = "" }) {
         </form>
       )}
     </>
-  )
+  );
 }

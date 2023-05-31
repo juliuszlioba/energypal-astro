@@ -1,72 +1,78 @@
-import { h, Fragment } from "preact"
-import { useForm } from "react-hook-form"
-import { useState } from "preact/compat"
-import { BsCheck2Circle } from "react-icons/bs"
+import { h, Fragment } from "preact";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { useState } from "preact/compat";
 
-import { WindTurbine } from "../assets/icons"
+import { WindTurbine } from "../assets/icons";
+
+type Inputs = {
+  access_key: string;
+  botcheck: boolean;
+  name: string;
+  phone: string;
+  email: string;
+  message: string;
+  consent: boolean;
+};
 
 export default function ContactForm() {
   const {
-    getValues,
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm()
+  } = useForm<Inputs>();
 
-  const [loading, setLoading] = useState(false)
-  const [success, setSuccess] = useState(false)
-  const [submitError, setSubmitError] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState(false);
 
-  const sendData = async (dataLoad) => {
-    // console.log({
-    //   url: `${__WORDPRESS_API_BASE_URL__}/wp-json/api/v1/enquiry/`,
-    //   data: dataLoad,
-    // })
+  const sendData = async (dataLoad: any) => {
+    setLoading(true);
 
-    setLoading(true)
-
-    //! TO-DO
-    fetch(`${__WORDPRESS_API_BASE_URL__}/wp-json/api/v1/enquiry/`, {
+    fetch(import.meta.env.PUBLIC_MAILER_API_URL, {
       method: "POST",
-      cache: "no-cache",
       headers: {
         "Content-Type": "application/json",
+        Accept: "application/json",
       },
-      body: JSON.stringify(dataLoad),
+      body: JSON.stringify(dataLoad, null, 2),
     })
       .then((response) => response.json())
       .then((result) => {
-        setLoading(false)
+        setLoading(false);
         if (result.status === "ok") {
-          setSuccess(true)
+          setSuccess(true);
         }
-        return setSubmitError(true)
+        return setSubmitError(true);
       })
       .catch((error) => {
-        setLoading(false)
-        setSubmitError(true)
-        console.log(error)
-      })
-  }
+        setLoading(false);
+        setSubmitError(true);
+        console.log(error);
+      });
+  };
 
-  const onSubmit = () => {
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
     //Prepare data
     const dataLoad = {
-      name: getValues("name"),
-      telefonnummer: getValues("phone"),
-      email: getValues("email"),
-      nachricht: getValues("message"),
-    }
+      name: data.name,
+      telefonnummer: data.phone,
+      email: data.email,
+      nachricht: data.message,
+      access_key: data.access_key,
+      botcheck: data.botcheck,
+    };
 
-    return sendData(dataLoad)
-  }
+    return sendData(dataLoad);
+  };
 
   return (
     <>
       {success ? (
         <div className="grid w-full grid-cols-1 items-center gap-4 py-12">
           <div className="flex items-center gap-4 rounded-lg bg-secondary p-8 text-white">
-            <BsCheck2Circle className="h-8 w-8 shrink-0" />
+            {/* prettier-ignore */}
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-8 w-8 shrink-0" > <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /> </svg>
+
             <span>
               <p class="pb-2 lg:text-xl">
                 Ihre nachricht wurde erfolgreich gesendet. Wir melden uns in
@@ -85,6 +91,20 @@ export default function ContactForm() {
           className="grid grid-cols-1 items-center gap-4 py-12 md:grid-cols-2 lg:grid-cols-6"
         >
           <div className="col-span-6 lg:col-span-2">
+            <input
+              type="hidden"
+              {...register("access_key", {
+                value: import.meta.env.PUBLIC_MAILER_API_KEY,
+              })}
+            />
+            <input
+              type="checkbox"
+              id=""
+              className="hidden"
+              style={{ display: "none" }}
+              {...register("botcheck")}
+            ></input>
+
             <input
               placeholder="Name"
               {...register("name", {
@@ -208,5 +228,5 @@ export default function ContactForm() {
         </form>
       )}
     </>
-  )
+  );
 }
