@@ -59,27 +59,32 @@ export default function Enquiry({ version = "" }) {
   const sendData = async (dataLoad: any) => {
     setLoading(true);
 
-    fetch(import.meta.env.PUBLIC_MAILER_API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify(dataLoad, null, 2),
-    })
-      .then((response) => response.json())
-      .then((result) => {
-        setLoading(false);
-        if (result.status === "ok") {
-          setSuccess(true);
-        }
-        return setSubmitError(true);
-      })
-      .catch((error) => {
-        setLoading(false);
-        setSubmitError(true);
-        console.log(error);
-      });
+    setTimeout(function () {
+      setLoading(false);
+      setSuccess(true);
+    }, 2000);
+
+    // fetch(import.meta.env.PUBLIC_MAILER_API_URL, {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     Accept: "application/json",
+    //   },
+    //   body: JSON.stringify(dataLoad, null, 2),
+    // })
+    //   .then((response) => response.json())
+    //   .then((result) => {
+    //     setLoading(false);
+    //     if (result.status === "ok") {
+    //       setSuccess(true);
+    //     }
+    //     return setSubmitError(true);
+    //   })
+    //   .catch((error) => {
+    //     setLoading(false);
+    //     setSubmitError(true);
+    //     console.log(error);
+    //   });
   };
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {

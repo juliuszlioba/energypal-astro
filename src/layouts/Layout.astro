@@ -29,19 +29,9 @@ const { title } = Astro.props;
       });
     </script>
 
-    <!-- <script is:raw define:vars={{ gtag_id }}>
-      // prettier-ignore
-      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-      })(window,document,'script','dataLayer',gtag_id);
-    </script> -->
   </head>
   <body>
-    <!-- prettier-ignore -->
-    <!--<noscript><iframe src=`https://www.googletagmanager.com/ns.html?id=${import.meta.env.PUBLIC_GTAG_ID}`
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript> -->
+
     <slot />
 
     <footer>
@@ -74,12 +64,6 @@ const { title } = Astro.props;
           >
             Datenshutz
           </a>
-          <!-- <button
-            class="text-primary hover:text-secondary hover:underline hover:underline-offset-4 lg:text-lg"
-            x-on:click="consent_form = ! consent_form"
-          >
-            Cookie Einstellungen
-          </button> -->
           <CookiesConsent client:load />
         </div>
         <div class="mt-12 flex flex-wrap justify-center">
