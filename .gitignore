@@ -23,3 +23,4 @@ pnpm-debug.log*
 # external assets
 public/assets/images
 public/assets/videos
+.vercel
