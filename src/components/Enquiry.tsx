@@ -1,6 +1,7 @@
+import type { SubmitHandler } from "react-hook-form";
 import { h, Fragment } from "preact";
 import { useState, useEffect, useRef } from "preact/compat";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Transition } from "@headlessui/react";
 import { Tab } from "@headlessui/react";
 

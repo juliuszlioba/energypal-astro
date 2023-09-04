@@ -1,5 +1,6 @@
 import { h, Fragment } from "preact";
-import { useForm, SubmitHandler } from "react-hook-form";
+import type { SubmitHandler } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useState } from "preact/compat";
 
 import { WindTurbine } from "../assets/icons";

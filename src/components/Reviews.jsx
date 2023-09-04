@@ -1,7 +1,5 @@
-import { h, Fragment } from "preact"
-import Carousel from "./Carousel"
-
-import { BsStarFill } from "react-icons/bs"
+import { h, Fragment } from "preact";
+import Carousel from "./Carousel";
 
 const reviews = [
   {
@@ -36,7 +34,7 @@ const reviews = [
       "Kompetent und unkompliziert. Wir sind sehr zufrieden mit der Beratung und können EnergyPal uneingeschränkt weiterempfehlen!",
     image: "/assets/images/person-4_150x150.jpg",
   },
-]
+];
 
 export default function Reviews() {
   return (
@@ -53,11 +51,56 @@ export default function Reviews() {
               </div>
               <div className="text-center md:text-left">
                 <div className="flex justify-center gap-2 md:justify-start">
-                  <BsStarFill className="h-6 w-6 text-yellow-400" />
-                  <BsStarFill className="h-6 w-6 text-yellow-400" />
-                  <BsStarFill className="h-6 w-6 text-yellow-400" />
-                  <BsStarFill className="h-6 w-6 text-yellow-400" />
-                  <BsStarFill className="h-6 w-6 text-yellow-400" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    class="h-6 w-6 text-yellow-400"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
+                  </svg>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    class="h-6 w-6 text-yellow-400"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
+                  </svg>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    class="h-6 w-6 text-yellow-400"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
+                  </svg>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    class="h-6 w-6 text-yellow-400"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
+                  </svg>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    class="h-6 w-6 text-yellow-400"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
+                  </svg>
                 </div>
                 <p className="mt-4 max-w-prose md:text-lg">{review.review}</p>
                 <p className="mt-4 max-w-prose text-primary">
@@ -65,9 +108,9 @@ export default function Reviews() {
                 </p>
               </div>
             </div>
-          )
+          );
         })}
       </Carousel>
     </div>
-  )
+  );
 }
